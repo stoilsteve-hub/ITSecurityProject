@@ -11,6 +11,7 @@ import org.mindrot.jbcrypt.BCrypt;
 public class Database {
     private static final String URL = "jdbc:sqlite:securenotes.db";
 
+    // db setup & connection
     public static void initialize() {
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
@@ -46,6 +47,7 @@ public class Database {
         return DriverManager.getConnection(URL);
     }
 
+    // user authentication & security
     public static boolean userExists(String username) {
         String sql = "SELECT id FROM users WHERE username = ?";
         try (Connection conn = getConnection();
@@ -86,10 +88,12 @@ public class Database {
             }
         } catch (Exception e) {
             e.printStackTrace();
+                return -1;
         }
         return -1;
     }
 
+    // standard note operations
     public static boolean createNote(int userId, String content) {
         String sql = "INSERT INTO notes (user_id, content) VALUES (?, ?)";
         try (Connection conn = getConnection();
@@ -175,6 +179,7 @@ public class Database {
         return "USER";
     }
 
+    // admin operations
     public static List<String> getAllNotes() {
         List<String> notes = new ArrayList<>();
         String sql = "SELECT n.id, n.content, u.username FROM notes n JOIN users u ON n.user_id = u.id";

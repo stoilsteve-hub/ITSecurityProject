@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) {
         Database.initialize();
         
+        // main start menu
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("1. Register");
@@ -27,6 +28,7 @@ public class Main {
         }
     }
 
+    // registration flow
     private static void registerUser(Scanner scanner) {
         while (true) {
             System.out.print("Enter username (or type 'cancel' to abort): ");
@@ -55,6 +57,7 @@ public class Main {
         }
     }
 
+    // login flow
     private static void loginUser(Scanner scanner) {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
@@ -75,6 +78,7 @@ public class Main {
         }
     }
 
+    // admin menu
     private static void adminMenu(Scanner scanner, int userId) {
         while (true) {
             System.out.println("--- ADMIN MENU ---");
@@ -124,6 +128,7 @@ public class Main {
         }
     }
 
+    // standard user menu
     private static void loggedInMenu(Scanner scanner, int userId) {
         while (true) {
             System.out.println("--- LOGGED IN MENU ---");
