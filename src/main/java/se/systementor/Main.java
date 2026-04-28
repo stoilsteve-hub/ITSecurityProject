@@ -64,9 +64,63 @@ public class Main {
         int userId = Database.loginUser(username, password);
         if (userId != -1) {
             System.out.println("Login successful!");
-            loggedInMenu(scanner, userId);
+            String role = Database.getRole(userId);
+            if (role.equals("ADMIN")) {
+                adminMenu(scanner, userId);
+            } else {
+                loggedInMenu(scanner, userId);
+            }
         } else {
             System.out.println("Invalid username or password!");
+        }
+    }
+
+    private static void adminMenu(Scanner scanner, int userId) {
+        while (true) {
+            System.out.println("--- ADMIN MENU ---");
+            System.out.println("1. View All Notes");
+            System.out.println("2. Delete Any Note");
+            System.out.println("3. Change Password");
+            System.out.println("4. Logout");
+            System.out.print("Choice: ");
+            
+            String choice = scanner.nextLine();
+            if (choice.equals("1")) {
+                var notes = Database.getAllNotes();
+                if (notes.isEmpty()) {
+                    System.out.println("No notes in the system.");
+                } else {
+                    System.out.println("--- ALL NOTES ---");
+                    for (String note : notes) {
+                        System.out.println(note);
+                    }
+                }
+            } else if (choice.equals("2")) {
+                System.out.print("Enter note ID to delete: ");
+                try {
+                    int noteId = Integer.parseInt(scanner.nextLine());
+                    if (Database.adminDeleteNote(noteId)) {
+                        System.out.println("Note deleted successfully!");
+                    } else {
+                        System.out.println("Failed to delete note.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID.");
+                }
+            } else if (choice.equals("3")) {
+                System.out.print("Enter your new password: ");
+                String newPassword = scanner.nextLine();
+                if (Database.updatePassword(userId, newPassword)) {
+                    System.out.println("Password updated successfully!");
+                } else {
+                    System.out.println("Failed to update password.");
+                }
+            } else if (choice.equals("4")) {
+                System.out.println("Logged out!");
+                break;
+            } else {
+                System.out.println("Invalid choice");
+            }
         }
     }
 

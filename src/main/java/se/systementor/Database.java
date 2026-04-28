@@ -32,6 +32,11 @@ public class Database {
             stmt.execute(createUsersTable);
             stmt.execute(createNotesTable);
 
+            if (!userExists("admin")) {
+                String hashedAdmin = BCrypt.hashpw("admin123", BCrypt.gensalt());
+                String insertAdmin = "INSERT INTO users (username, password, role) VALUES ('admin', '" + hashedAdmin + "', 'ADMIN')";
+                stmt.execute(insertAdmin);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -148,6 +153,48 @@ public class Database {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, hashedPassword);
             pstmt.setInt(2, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getRole(int userId) {
+        String sql = "SELECT role FROM users WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("role");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "USER";
+    }
+
+    public static List<String> getAllNotes() {
+        List<String> notes = new ArrayList<>();
+        String sql = "SELECT n.id, n.content, u.username FROM notes n JOIN users u ON n.user_id = u.id";
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            var rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                notes.add(rs.getInt("id") + ". " + rs.getString("content") + " (by " + rs.getString("username") + ")");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return notes;
+    }
+
+    public static boolean adminDeleteNote(int noteId) {
+        String sql = "DELETE FROM notes WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, noteId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
         } catch (Exception e) {
