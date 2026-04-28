@@ -61,7 +61,9 @@ public class Main {
             System.out.println("--- LOGGED IN MENU ---");
             System.out.println("1. Create Note");
             System.out.println("2. View Notes");
-            System.out.println("3. Logout");
+            System.out.println("3. Edit Note");
+            System.out.println("4. Delete Note");
+            System.out.println("5. Logout");
             System.out.print("Choice: ");
             
             String choice = scanner.nextLine();
@@ -84,6 +86,32 @@ public class Main {
                     }
                 }
             } else if (choice.equals("3")) {
+                System.out.print("Enter note ID to edit: ");
+                try {
+                    int noteId = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Enter new content: ");
+                    String newContent = scanner.nextLine();
+                    if (Database.editNote(noteId, userId, newContent)) {
+                        System.out.println("Note updated successfully!");
+                    } else {
+                        System.out.println("Failed to update note. Make sure the ID is correct and belongs to you.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID.");
+                }
+            } else if (choice.equals("4")) {
+                System.out.print("Enter note ID to delete: ");
+                try {
+                    int noteId = Integer.parseInt(scanner.nextLine());
+                    if (Database.deleteNote(noteId, userId)) {
+                        System.out.println("Note deleted successfully!");
+                    } else {
+                        System.out.println("Failed to delete note. Make sure the ID is correct and belongs to you.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid ID.");
+                }
+            } else if (choice.equals("5")) {
                 System.out.println("Logged out!");
                 break;
             } else {

@@ -101,4 +101,31 @@ public class Database {
         }
         return notes;
     }
+
+    public static boolean editNote(int noteId, int userId, String newContent) {
+        String sql = "UPDATE notes SET content = ? WHERE id = ? AND user_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newContent);
+            pstmt.setInt(2, noteId);
+            pstmt.setInt(3, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean deleteNote(int noteId, int userId) {
+        String sql = "DELETE FROM notes WHERE id = ? AND user_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, noteId);
+            pstmt.setInt(2, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
