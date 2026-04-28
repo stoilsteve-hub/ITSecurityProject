@@ -28,16 +28,30 @@ public class Main {
     }
 
     private static void registerUser(Scanner scanner) {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
+        while (true) {
+            System.out.print("Enter username (or type 'cancel' to abort): ");
+            String username = scanner.nextLine();
+            
+            if (username.equalsIgnoreCase("cancel")) {
+                break;
+            }
+            
+            if (Database.userExists(username)) {
+                System.out.println("Error: Username already exists. Please try another one.");
+                continue;
+            }
 
-        boolean success = Database.registerUser(username, password);
-        if (success) {
-            System.out.println("User registered successfully!");
-        } else {
-            System.out.println("Registration failed!");
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine();
+
+            boolean success = Database.registerUser(username, password);
+            if (success) {
+                System.out.println("User registered successfully!");
+                break;
+            } else {
+                System.out.println("Registration failed!");
+                break;
+            }
         }
     }
 
@@ -63,7 +77,8 @@ public class Main {
             System.out.println("2. View Notes");
             System.out.println("3. Edit Note");
             System.out.println("4. Delete Note");
-            System.out.println("5. Logout");
+            System.out.println("5. Change Password");
+            System.out.println("6. Logout");
             System.out.print("Choice: ");
             
             String choice = scanner.nextLine();
@@ -112,6 +127,14 @@ public class Main {
                     System.out.println("Invalid ID.");
                 }
             } else if (choice.equals("5")) {
+                System.out.print("Enter your new password: ");
+                String newPassword = scanner.nextLine();
+                if (Database.updatePassword(userId, newPassword)) {
+                    System.out.println("Password updated successfully!");
+                } else {
+                    System.out.println("Failed to update password.");
+                }
+            } else if (choice.equals("6")) {
                 System.out.println("Logged out!");
                 break;
             } else {

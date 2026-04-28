@@ -41,6 +41,18 @@ public class Database {
         return DriverManager.getConnection(URL);
     }
 
+    public static boolean userExists(String username) {
+        String sql = "SELECT id FROM users WHERE username = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            var rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static boolean registerUser(String username, String password) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'USER')";
@@ -121,6 +133,20 @@ public class Database {
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, noteId);
+            pstmt.setInt(2, userId);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean updatePassword(int userId, String newPassword) {
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, hashedPassword);
             pstmt.setInt(2, userId);
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
