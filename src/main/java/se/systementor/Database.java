@@ -52,4 +52,35 @@ public class Database {
             return false;
         }
     }
+
+    public static int loginUser(String username, String password) {
+        String sql = "SELECT id, password FROM users WHERE username = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            var rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String storedHash = rs.getString("password");
+                if (BCrypt.checkpw(password, storedHash)) {
+                    return rs.getInt("id");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static boolean createNote(int userId, String content) {
+        String sql = "INSERT INTO notes (user_id, content) VALUES (?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, content);
+            pstmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
