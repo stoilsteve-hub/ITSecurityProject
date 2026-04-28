@@ -60,7 +60,7 @@ public class Main {
         while (true) {
             System.out.println("--- LOGGED IN MENU ---");
             System.out.println("1. Create Note");
-            System.out.println("2. View Notes (coming soon)");
+            System.out.println("2. View Notes");
             System.out.println("3. Logout");
             System.out.print("Choice: ");
             
@@ -74,7 +74,15 @@ public class Main {
                     System.out.println("Failed to create note.");
                 }
             } else if (choice.equals("2")) {
-                System.out.println("Not implemented yet");
+                var notes = Database.getNotes(userId);
+                if (notes.isEmpty()) {
+                    System.out.println("You have no notes yet.");
+                } else {
+                    System.out.println("--- YOUR NOTES ---");
+                    for (String note : notes) {
+                        System.out.println(note);
+                    }
+                }
             } else if (choice.equals("3")) {
                 System.out.println("Logged out!");
                 break;

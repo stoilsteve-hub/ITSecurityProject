@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class Database {
@@ -82,5 +84,21 @@ public class Database {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static List<String> getNotes(int userId) {
+        List<String> notes = new ArrayList<>();
+        String sql = "SELECT id, content FROM notes WHERE user_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            var rs = pstmt.executeQuery();
+            while (rs.next()) {
+                notes.add(rs.getInt("id") + ". " + rs.getString("content"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return notes;
     }
 }
